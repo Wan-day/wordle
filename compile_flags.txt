@@ -1,0 +1,5 @@
+# compile_flags.txt — one compiler flag per line, no comments allowed actually
+-Iincludes
+-Wall
+-Wextra
+-std=c11
