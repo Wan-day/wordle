@@ -1,0 +1,183 @@
+<BoardTile>:
+    font_size: 32
+    color: "#e2e8f0"
+    canvas.before:
+        Color:
+            rgba: self.bg_color
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<AlphaTile@Button>:
+    font_size: 28
+    color: "#e2e8f0"
+
+<MyLayout@FloatLayout>:
+    GridLayout:
+        size_hint: 0.7000, 0.4000
+        pos_hint: {'x': 0.1500, 'y': 0.5500}
+        spacing: 10
+        padding: 10
+        cols: 5
+        rows: 6
+        id: game_board
+        BoardTile:
+            text: "0x0"
+        BoardTile:
+            text: "0x1"
+        BoardTile:
+            text: "0x2"
+        BoardTile:
+            text: "0x3"
+        BoardTile:
+            text: "0x4"
+        BoardTile:
+            text: "1x0"
+        BoardTile:
+            text: "1x1"
+        BoardTile:
+            text: "1x2"
+        BoardTile:
+            text: "1x3"
+        BoardTile:
+            text: "1x4"
+        BoardTile:
+            text: "2x0"
+        BoardTile:
+            text: "2x1"
+        BoardTile:
+            text: "2x2"
+        BoardTile:
+            text: "2x3"
+        BoardTile:
+            text: "2x4"
+        BoardTile:
+            text: "3x0"
+        BoardTile:
+            text: "3x1"
+        BoardTile:
+            text: "3x2"
+        BoardTile:
+            text: "3x3"
+        BoardTile:
+            text: "3x4"
+        BoardTile:
+            text: "4x0"
+        BoardTile:
+            text: "4x1"
+        BoardTile:
+            text: "4x2"
+        BoardTile:
+            text: "4x3"
+        BoardTile:
+            text: "4x4"
+        BoardTile:
+            text: "5x0"
+        BoardTile:
+            text: "5x1"
+        BoardTile:
+            text: "5x2"
+        BoardTile:
+            text: "5x3"
+        BoardTile:
+            text: "5x4"
+    TextInput:
+        pos_hint: {'x': 0.2000, 'y': 0.4000}
+        size_hint: 0.6000, 0.1000
+        hint_text: "Enter text..."
+        font_size: 14
+        foreground_color: "#6b7280"
+        id: text_input
+    GridLayout:
+        pos_hint: {'x': 0.1000, 'y': 0.0500}
+        size_hint: 0.8000, 0.2500
+        cols: 10
+        spacing: 10
+        padding: 10
+        AlphaTile:
+            id: Q
+            text: "Q"
+        AlphaTile:
+            id: W
+            text: "W"
+        AlphaTile:
+            id: E
+            text: "E"
+        AlphaTile:
+            id: R
+            text: "R"
+        AlphaTile:
+            id: T
+            text: "T"
+        AlphaTile:
+            id: Y
+            text: "Y"
+        AlphaTile:
+            id: U
+            text: "U"
+        AlphaTile:
+            id: I
+            text: "I"
+        AlphaTile:
+            id: O
+            text: "O"
+        AlphaTile:
+            id: P
+            text: "P"
+        AlphaTile:
+            id: A
+            text: "A"
+        AlphaTile:
+            id: S
+            text: "S"
+        AlphaTile:
+            id: D
+            text: "D"
+        AlphaTile:
+            id: F
+            text: "F"
+        AlphaTile:
+            id: G
+            text: "G"
+        AlphaTile:
+            id: H
+            text: "H"
+        AlphaTile:
+            id: J
+            text: "J"
+        AlphaTile:
+            id: K
+            text: "K"
+        AlphaTile:
+            id: L
+            text: "L"
+        AlphaTile:
+            id: delete
+            text: "DEL"
+        AlphaTile:
+            id: Z
+            text: "Z"
+        AlphaTile:
+            id: X
+            text: "X"
+        AlphaTile:
+            id: C
+            text: "C"
+        AlphaTile:
+            id: V
+            text: "V"
+        AlphaTile:
+            id: B
+            text: "B"
+        AlphaTile:
+            id: N
+            text: "N"
+        AlphaTile:
+            id: M
+            text: "M"
+        AlphaTile:
+            id: enter
+            text: "ENTER"
+
+<WordleApp>:
+MyLayout:
