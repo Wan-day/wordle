@@ -1,36 +1,20 @@
 # AGENTS.md
 
-<!-- Replace every <...> and delete what does not apply. Keep this file under
-     150 lines: it loads into every session, so every line costs context. Put
-     long procedures in docs/ and link them below instead of pasting them here. -->
 
 ## Project
 
-<one or two sentences: what this repo is, who uses it, and the one thing an agent must not break>
+This repo is created to replicate the game wordle using the python programming language and kivy framework for gui.
 
-## Commands
-
-- Install: `<npm ci | uv sync | go mod download>`
-- Build: `<npm run build>`
-- Test, all: `<npm test>`
-- Test, one file: `<npm test -- path/to/file.test.ts>`
-- Lint and format: `<npm run lint && npm run format>`
-- Run locally: `<npm run dev>` (serves on `<http://localhost:3000>`)
-
-Run the one-file test while you work and the full test and lint commands before you say a task is done.
 
 ## Layout
 
-- `<src/api/>`: <HTTP handlers; one file per resource>
-- `<src/core/>`: <business logic; no I/O here>
-- `<src/db/>`: <schema and migrations; migrations are append-only>
-- `<tests/>`: <mirrors src/; fixtures in tests/fixtures/>
+- src/: main python files
 
 ## Conventions
 
-- <Language and version, e.g. TypeScript 5 strict mode, Python 3.12 with type hints>
-- <Error handling rule, e.g. return errors, do not throw across module boundaries>
-- <Naming rule, e.g. files kebab-case, types PascalCase>
+- Language and version: Python 3.14 with type hints
+- Error handling rule: return errors, do not throw across module boundaries
+- Naming rule: follow flake8 and mypy standard
 - Match the style of the file you are editing over any general preference.
 - Add or update a test for every behavior change.
 
@@ -47,7 +31,7 @@ Ask first:
 
 Never:
 - Commit secrets, or read `.env` files and credentials.
-- Push to `<main>`, force-push, or rewrite history.
+- Push to `main`, force-push, or rewrite history.
 - Edit generated files: `<dist/, *.lock, src/generated/>`. Change the generator instead.
 
 ## More detail, loaded only when needed
