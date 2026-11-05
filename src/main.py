@@ -2,6 +2,8 @@ import random
 from pathlib import Path
 from typing import Any
 from kivy.app import App
+from kivy.clock import Clock
+from kivy.core.window import Window
 from kivy.properties import ColorProperty
 from kivy.uix.label import Label
 from kivy.uix.button import Button
@@ -12,6 +14,15 @@ COLORS = {
     "present": "#b59f3b",
     "absent": "#3a3a3c",
 }
+
+ALPHA_HINT_RANK = {
+    COLORS["absent"]: 0,
+    COLORS["present"]: 1,
+    COLORS["correct"]: 2,
+}
+
+ALPHA_TEXT_NORMAL = "#e2e8f0"
+ALPHA_TEXT_DIM = "#6b7280"
 
 
 class WordList():
@@ -43,6 +54,9 @@ class WordleApp(App):
         self.game_rows: int = 6
         self.game_cols: int = 5
         self.curr_row: int = 0
+        self.game_word: str = ""
+        self.game_over: bool = False
+        self.alpha_hints: dict[str, str] = {}
 
     def on_start(self) -> None:
         board = self.root.ids.game_board
@@ -50,8 +64,41 @@ class WordleApp(App):
         # Kivy stores children in reverse order, so flip them
         self.tiles = board.children[::-1]
         self.alphabet = alphabet.children[::-1]
-        self.rebuild_board()
+        Window.bind(focus=self.on_window_focus)
+        self.new_game()
+
+    def on_stop(self) -> None:
+        Window.unbind(focus=self.on_window_focus)
+        Clock.unschedule(self.focus_input)
+
+    def on_window_focus(self, window: Any, focused: bool) -> None:
+        if focused:
+            Clock.schedule_once(self.focus_input, 0)
+
+    def focus_input(self, *args: Any) -> None:
+        text_input = self.root.ids.text_input
+        if self.game_over or text_input.disabled:
+            return None
+        text_input.focus = True
+        return None
+
+    def new_game(self) -> None:
+        self.game_over = False
+        self.curr_row = 0
         self.game_word = self.word_list.select_word()
+        self.root.ids.text_input.text = ""
+        self.rebuild_board()
+        self.alpha_hints.clear()
+        for tile in self.alphabet:
+            tile.background_color = COLORS["absent"]
+            tile.color = ALPHA_TEXT_NORMAL
+            tile.disabled = False
+        self.root.ids.text_input.disabled = False
+        self.root.ids.message.text = ""
+        self.root.ids.guess.text = "Submit"
+        self.root.ids.guess.disabled = False
+        self.root.ids.guess.opacity = 1
+        Clock.schedule_once(self.focus_input, 0)
 
     def set_board_tile(self, pos: int, color: str, letter: str) -> None:
         tile = self.tiles[pos]
@@ -65,52 +112,125 @@ class WordleApp(App):
             tile.text = letter
 
     def set_alpha_tile(self, color: str, letter: str) -> None:
-        for i in range(26):
-            if self.alphabet[i].text == letter:
-                self.alphabet[i].background_color = color
+        current = self.alpha_hints.get(letter)
+        if current is not None and (
+            ALPHA_HINT_RANK[color] < ALPHA_HINT_RANK[current]
+        ):
+            return None
+        for tile in self.alphabet:
+            if tile.text == "DEL":
+                continue
+            if tile.text == letter:
+                tile.background_color = color
+                if color == COLORS["absent"]:
+                    tile.color = ALPHA_TEXT_DIM
+                else:
+                    tile.color = ALPHA_TEXT_NORMAL
+                self.alpha_hints[letter] = color
                 return None
 
     def rebuild_board(self) -> None:
         for row in range(self.game_rows):
             for col in range(self.game_cols):
                 pos = row * self.game_cols + col
-                self.set_board_tile(pos, COLORS["absent"], "")
+                self.set_board_tile(pos, COLORS["empty"], "")
 
-    def endgame(self) -> None:
-        pass
+    def endgame(self, won: bool) -> None:
+        self.game_over = True
+        if won:
+            self.root.ids.message.text = "You win!"
+        else:
+            self.root.ids.message.text = (
+                f"Out of guesses! The word was {self.game_word.upper()}"
+            )
+        self.root.ids.text_input.disabled = True
+        self.root.ids.guess.text = "Restart"
+        for tile in self.alphabet:
+            tile.disabled = True
 
-    def update_colors(self) -> None:
-        text = f"{self.root.ids.text_input.text[0:5]:<5}"
+    def on_action_press(self) -> None:
+        if self.game_over:
+            self.new_game()
+        else:
+            self.submit_guess()
+
+    def update_colors(self, text: str) -> None:
         offset: int = self.game_cols * self.curr_row
+        colors: list[str] = [COLORS["absent"] for _ in text]
+        remaining: list[str] = list(self.game_word)
+        # First pass: exact matches are correct and consume their letter.
         for i in range(len(text)):
             if text[i] == self.game_word[i]:
-                self.set_board_tile(offset + i, COLORS["correct"], "None")
-                self.set_alpha_tile(COLORS["correct"], text[i].upper())
-            elif text[i] in self.game_word:
-                self.set_board_tile(offset + i, COLORS["present"], "None")
-                self.set_alpha_tile(COLORS["present"], text[i].upper())
-            else:
-                self.set_board_tile(offset + i, COLORS["absent"], "None")
-                self.set_alpha_tile(COLORS["absent"], text[i].upper())
+                colors[i] = COLORS["correct"]
+                remaining[i] = ""
+        # Second pass: a guess letter is present only while an unmatched
+        # copy of it remains in the answer.
+        for i in range(len(text)):
+            if colors[i] == COLORS["correct"]:
+                continue
+            if text[i] in remaining:
+                colors[i] = COLORS["present"]
+                remaining.remove(text[i])
+
+        status_rank = {
+            COLORS["absent"]: 0,
+            COLORS["present"]: 1,
+            COLORS["correct"]: 2,
+        }
+        alphabet_colors: dict[str, str] = {}
+        for i in range(len(text)):
+            letter = text[i].upper()
+            current = alphabet_colors.get(letter)
+            if current is None or status_rank[colors[i]] > status_rank[current]:
+                alphabet_colors[letter] = colors[i]
+
+        for i in range(len(text)):
+            self.set_board_tile(offset + i, colors[i], "None")
+        for letter, color in alphabet_colors.items():
+            self.set_alpha_tile(color, letter)
+
+    def press_key(self, key: str) -> None:
+        if self.game_over:
+            return None
+        text_input = self.root.ids.text_input
+        if key == "DEL":
+            text_input.text = text_input.text[:-1]
+        elif len(key) == 1 and key.isalpha():
+            if len(text_input.text) >= self.game_cols:
+                return None
+            text_input.text += key.lower()
+        return None
 
     def submit_guess(self) -> None:
-        self.update_colors()
-        text = f"{self.root.ids.text_input.text[0:5]:<5}".lower()
-        if text not in self.word_list.words:
+        if self.game_over:
             return None
-        if self.curr_row == 5:
-            self.endgame()
-        else:
-            self.curr_row += 1
-            self.root.ids.text_input.text = ""
+        try:
+            text = self.root.ids.text_input.text[0:self.game_cols].lower()
+            if len(text) < self.game_cols:
+                self.root.ids.message.text = "Not enough letters"
+                return None
+            if not self.word_list.check_word(text):
+                self.root.ids.message.text = "Not in word list"
+                return None
+            self.update_colors(text)
+            if text == self.game_word:
+                self.endgame(True)
+            elif self.curr_row == self.game_rows - 1:
+                self.endgame(False)
+            else:
+                self.curr_row += 1
+                self.root.ids.text_input.text = ""
+            return None
+        finally:
+            Clock.schedule_once(self.focus_input, 0)
 
     def update_text(self, player_input: str) -> None:
-        player_input = f"{player_input[0:5]:<5}".upper()
+        self.root.ids.message.text = ""
+        player_input = f"{player_input[0:self.game_cols]:<{self.game_cols}}".upper()
         offset: int = self.game_cols * self.curr_row
 
-        if len(player_input) <= 5:
-            for i in range(len(player_input)):
-                self.set_board_tile(offset + i, "None", player_input[i])
+        for i in range(len(player_input)):
+            self.set_board_tile(offset + i, COLORS["empty"], player_input[i])
 
 
 def main() -> None:

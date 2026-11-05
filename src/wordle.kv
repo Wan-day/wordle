@@ -12,7 +12,8 @@
     font_size: 28
     color: "#e2e8f0"
     background_normal: ''
-    bakcground_down: ''
+    background_down: ''
+    on_release: app.press_key(self.text)
 
 <MyLayout@FloatLayout>:
     GridLayout:
@@ -84,13 +85,23 @@
         BoardTile:
             text: "5x4"
 
+    Label:
+        pos_hint: {'x': 0.1500, 'y': 0.5050}
+        size_hint: 0.7000, 0.0450
+        id: message
+        text: ""
+        font_size: 16
+
     TextInput:
         pos_hint: {'x': 0.2000, 'y': 0.4000}
         size_hint: 0.6000, 0.1000
         hint_text: "Enter text..."
         font_size: 14
         foreground_color: "#6b7280"
+        multiline: False
+        text_validate_unfocus: False
         on_text: app.update_text(self.text)
+        on_text_validate: app.submit_guess()
         id: text_input
 
     Button:
@@ -99,7 +110,7 @@
         font_size: 32
         id: guess
         text: "Submit"
-        on_press: app.submit_guess()
+        on_press: app.on_action_press()
 
     GridLayout:
         pos_hint: {'x': 0.1000, 'y': 0.0500}

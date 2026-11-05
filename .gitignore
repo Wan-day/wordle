@@ -1,3 +1,7 @@
 venv/
 pyrightconfig.json
 compile_commands.json
+
+# Generated caches
+.cache/
+__pycache__/
