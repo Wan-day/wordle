@@ -4,15 +4,16 @@ from typing import Any
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.window import Window
+from kivy.factory import Factory
 from kivy.properties import ColorProperty
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 
 COLORS = {
-    "empty": "#121213",
-    "correct": "#538d4e",
-    "present": "#b59f3b",
-    "absent": "#3a3a3c",
+    "empty": "#141a26",
+    "correct": "#22c55e",
+    "present": "#eab308",
+    "absent": "#343b4a",
 }
 
 ALPHA_HINT_RANK = {
@@ -21,8 +22,8 @@ ALPHA_HINT_RANK = {
     COLORS["correct"]: 2,
 }
 
-ALPHA_TEXT_NORMAL = "#e2e8f0"
-ALPHA_TEXT_DIM = "#6b7280"
+ALPHA_TEXT_NORMAL = "#eef2ff"
+ALPHA_TEXT_DIM = "#7b849b"
 
 
 class WordList():
@@ -57,6 +58,11 @@ class WordleApp(App):
         self.game_word: str = ""
         self.game_over: bool = False
         self.alpha_hints: dict[str, str] = {}
+
+    def build(self) -> Any:
+        # MyLayout lives in wordle.kv, which load_kv() has already parsed and
+        # registered with Factory by the time build() runs.
+        return Factory.MyLayout()
 
     def on_start(self) -> None:
         board = self.root.ids.game_board

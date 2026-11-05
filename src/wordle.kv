@@ -1,26 +1,199 @@
+# Wordle UI theme.  Color constants are mirrored in src/main.py where the
+# game logic needs them (COLORS, ALPHA_TEXT_NORMAL, ALPHA_TEXT_DIM).
+
 <BoardTile>:
-    font_size: 32
-    color: "#e2e8f0"
+    font_size: 22
+    bold: True
+    color: "#eef2ff"
+    halign: "center"
+    valign: "middle"
+    text_size: self.size
     canvas.before:
         Color:
+            rgba: 0.45, 0.50, 0.66, 0.22
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [10,]
+        Color:
             rgba: self.bg_color
+        RoundedRectangle:
+            pos: self.x + 1.5, self.y + 1.5
+            size: self.width - 3, self.height - 3
+            radius: [8.5,]
+
+<AlphaTile>:
+    font_size: 17
+    bold: True
+    color: "#eef2ff"
+    background_normal: ''
+    background_down: ''
+    canvas.before:
+        Color:
+            rgba: 0.45, 0.50, 0.66, 0.24
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [9,]
+        Color:
+            rgba: self.background_color
+        RoundedRectangle:
+            pos: self.x + 1.2, self.y + 1.2
+            size: self.width - 2.4, self.height - 2.4
+            radius: [8,]
+        Color:
+            rgba: (1, 1, 1, 0.16) if self.state == 'down' else (0, 0, 0, 0)
+        RoundedRectangle:
+            pos: self.x + 1.2, self.y + 1.2
+            size: self.width - 2.4, self.height - 2.4
+            radius: [8,]
+        Color:
+            rgba: (0.02, 0.03, 0.06, 0.55) if self.disabled else (0, 0, 0, 0)
+        RoundedRectangle:
+            pos: self.x + 1.2, self.y + 1.2
+            size: self.width - 2.4, self.height - 2.4
+            radius: [8,]
+    on_release: app.press_key(self.text)
+
+<GuessButton@Button>:
+    background_normal: ''
+    background_down: ''
+    background_color: 0, 0, 0, 0
+    color: "#ffffff"
+    bold: True
+    font_size: 20
+    canvas.before:
+        Color:
+            rgba: (0.32, 0.24, 0.86, 1) if self.state == 'down' else (0.47, 0.37, 1, 1)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [14,]
+        Color:
+            rgba: (0.30, 0.22, 0.80, 0.35) if self.state == 'down' else (0.72, 0.66, 1, 0.30)
+        RoundedRectangle:
+            pos: self.x + 1.5, self.y + 1.5
+            size: self.width - 3, self.height - 3
+            radius: [12.5,]
+
+<MyLayout@FloatLayout>:
+    canvas.before:
+        # Deep vertical gradient: midnight blue at the bottom, indigo at
+        # the top.  Twelve bands keep the transition smooth without assets.
+        Color:
+            rgba: 0.0235, 0.0314, 0.0627, 1
         Rectangle:
             pos: self.pos
             size: self.size
+        Color:
+            rgba: 0.0275, 0.0392, 0.0784, 1
+        Rectangle:
+            pos: self.x, self.y + self.height * 0.0833
+            size: self.width, self.height * 0.0833 + 1
+        Color:
+            rgba: 0.0353, 0.0471, 0.0941, 1
+        Rectangle:
+            pos: self.x, self.y + self.height * 0.1667
+            size: self.width, self.height * 0.0833 + 1
+        Color:
+            rgba: 0.0431, 0.0549, 0.1137, 1
+        Rectangle:
+            pos: self.x, self.y + self.height * 0.2500
+            size: self.width, self.height * 0.0833 + 1
+        Color:
+            rgba: 0.0510, 0.0627, 0.1333, 1
+        Rectangle:
+            pos: self.x, self.y + self.height * 0.3333
+            size: self.width, self.height * 0.0833 + 1
+        Color:
+            rgba: 0.0627, 0.0745, 0.1529, 1
+        Rectangle:
+            pos: self.x, self.y + self.height * 0.4167
+            size: self.width, self.height * 0.0833 + 1
+        Color:
+            rgba: 0.0706, 0.0863, 0.1765, 1
+        Rectangle:
+            pos: self.x, self.y + self.height * 0.5000
+            size: self.width, self.height * 0.0833 + 1
+        Color:
+            rgba: 0.0824, 0.0941, 0.2000, 1
+        Rectangle:
+            pos: self.x, self.y + self.height * 0.5833
+            size: self.width, self.height * 0.0833 + 1
+        Color:
+            rgba: 0.0941, 0.1059, 0.2275, 1
+        Rectangle:
+            pos: self.x, self.y + self.height * 0.6667
+            size: self.width, self.height * 0.0833 + 1
+        Color:
+            rgba: 0.1059, 0.1137, 0.2510, 1
+        Rectangle:
+            pos: self.x, self.y + self.height * 0.7500
+            size: self.width, self.height * 0.0833 + 1
+        Color:
+            rgba: 0.1255, 0.1176, 0.2824, 1
+        Rectangle:
+            pos: self.x, self.y + self.height * 0.8333
+            size: self.width, self.height * 0.0833 + 1
+        Color:
+            rgba: 0.1451, 0.1216, 0.3216, 1
+        Rectangle:
+            pos: self.x, self.y + self.height * 0.9167
+            size: self.width, self.height * 0.0833 + 1
 
-<AlphaTile>:
-    font_size: 28
-    color: "#e2e8f0"
-    background_normal: ''
-    background_down: ''
-    on_release: app.press_key(self.text)
+        # Thin accent edge along the very top.
+        Color:
+            rgba: 0.55, 0.49, 1, 0.55
+        Rectangle:
+            pos: self.x, self.top - 2
+            size: self.width, 2
 
-<MyLayout@FloatLayout>:
+    BoxLayout:
+        pos_hint: {'x': 0.20, 'y': 0.886}
+        size_hint: 0.60, 0.103
+        orientation: 'vertical'
+        spacing: 0
+        Label:
+            text: "[color=ffffff]WORD[/color][color=8b7cff]LE[/color]"
+            markup: True
+            bold: True
+            font_size: 34
+            color: "#f4f6ff"
+            size_hint_y: 0.68
+        Widget:
+            size_hint_y: None
+            height: 2
+            canvas:
+                Color:
+                    rgba: 0.55, 0.49, 1, 0.75
+                RoundedRectangle:
+                    pos: self.center_x - 24, self.y
+                    size: 48, 2
+                    radius: [1,]
+        Label:
+            text: "GUESS THE WORD IN SIX TRIES"
+            bold: True
+            font_size: 11
+            color: "#9aa4c0"
+            size_hint_y: 0.32
+
     GridLayout:
-        size_hint: 0.7000, 0.4000
-        pos_hint: {'x': 0.1500, 'y': 0.5500}
-        spacing: 10
-        padding: 10
+        canvas.before:
+            Color:
+                rgba: 0.055, 0.070, 0.110, 0.62
+            RoundedRectangle:
+                pos: self.x - 7, self.y - 7
+                size: self.width + 14, self.height + 14
+                radius: [18,]
+            Color:
+                rgba: 0.45, 0.50, 0.66, 0.18
+            Line:
+                rounded_rectangle: (self.x - 7, self.y - 7, self.width + 14, self.height + 14, 18)
+                width: 1
+        size_hint: 0.2800, 0.4250
+        pos_hint: {'x': 0.3600, 'y': 0.4450}
+        spacing: 7
+        padding: 9
         cols: 5
         rows: 6
         id: game_board
@@ -86,39 +259,68 @@
             text: "5x4"
 
     Label:
-        pos_hint: {'x': 0.1500, 'y': 0.5050}
-        size_hint: 0.7000, 0.0450
+        pos_hint: {'x': 0.1500, 'y': 0.3900}
+        size_hint: 0.7000, 0.0400
         id: message
         text: ""
-        font_size: 16
+        font_size: 15
+        bold: True
+        color: "#c9d2e8"
 
     TextInput:
-        pos_hint: {'x': 0.2000, 'y': 0.4000}
-        size_hint: 0.6000, 0.1000
-        hint_text: "Enter text..."
-        font_size: 14
-        foreground_color: "#6b7280"
+        pos_hint: {'x': 0.2300, 'y': 0.3100}
+        size_hint: 0.5400, 0.0700
+        hint_text: "Type your guess..."
+        font_size: 21
+        bold: True
+        background_normal: ''
+        background_active: ''
+        background_disabled_normal: ''
+        background_color: 0, 0, 0, 0
+        foreground_color: "#eef2ff"
+        hint_text_color: "#6f7891"
+        cursor_color: "#8b7cff"
+        cursor_width: 2
+        selection_color: 0.54, 0.49, 1, 0.35
+        padding: [14, 9, 14, 9]
         multiline: False
         text_validate_unfocus: False
         on_text: app.update_text(self.text)
         on_text_validate: app.submit_guess()
+        canvas.before:
+            # Outline-only field: no filled shape sits behind the text, so
+            # the app background shows through.  A rounded outline plus a
+            # bottom accent keeps the input discoverable.
+            Color:
+                rgba: (0.55, 0.49, 1, 0.85) if self.focus else (0.45, 0.50, 0.66, 0.26)
+            Line:
+                rounded_rectangle: (self.x, self.y, self.width, self.height, 12)
+                width: 1.2
+            Color:
+                rgba: (0.55, 0.49, 1, 0.85) if self.focus else (0.45, 0.50, 0.66, 0.40)
+            Line:
+                points: self.x + 14, self.y + 1, self.right - 14, self.y + 1
+                width: 1.2
+            # TextInput paints its glyphs with the last active canvas color,
+            # so restore the foreground color after the outline.
+            Color:
+                rgba: self.foreground_color
         id: text_input
 
-    Button:
-        pos_hint: {'x': 0.3000, 'y': 0.3050}
-        size_hint: 0.4000, 0.0800
-        font_size: 32
+    GuessButton:
+        pos_hint: {'x': 0.3000, 'y': 0.2250}
+        size_hint: 0.4000, 0.0700
         id: guess
         text: "Submit"
         on_press: app.on_action_press()
 
     GridLayout:
-        pos_hint: {'x': 0.1000, 'y': 0.0500}
+        pos_hint: {'x': 0.0700, 'y': 0.0150}
         id: alpha
-        size_hint: 0.8000, 0.2500
+        size_hint: 0.8600, 0.2000
         cols: 10
-        spacing: 10
-        padding: 10
+        spacing: 6
+        padding: 8
         AlphaTile:
             text: "Q"
         AlphaTile:
@@ -175,5 +377,3 @@
         AlphaTile:
             text: "M"
 
-<WordleApp>:
-MyLayout:

@@ -36,6 +36,18 @@ class WordleAppTest(unittest.TestCase):
             text_input.focus = False
         self.app.on_stop()
 
+    def test_build_returns_layout_with_expected_ids(self) -> None:
+        app = main.WordleApp()
+        root = app.build()
+
+        self.assertEqual(root.__class__.__name__, "MyLayout")
+        for widget_id in (
+            "game_board", "message", "text_input", "guess", "alpha"
+        ):
+            self.assertIsNotNone(root.ids.get(widget_id), widget_id)
+        self.assertEqual(len(root.ids.game_board.children), 30)
+        self.assertEqual(len(root.ids.alpha.children), 27)
+
     def submit_guess(self, text: str) -> None:
         self.root.ids.text_input.text = text
         self.app.submit_guess()
@@ -212,6 +224,14 @@ class WordleAppTest(unittest.TestCase):
 
     def test_text_input_does_not_unfocus_on_validate(self) -> None:
         self.assertFalse(self.root.ids.text_input.text_validate_unfocus)
+
+    def test_text_input_background_is_transparent(self) -> None:
+        text_input = self.root.ids.text_input
+
+        self.assertEqual(list(text_input.background_color), [0, 0, 0, 0])
+        self.assertEqual(text_input.background_normal, "")
+        self.assertEqual(text_input.background_active, "")
+        self.assertEqual(text_input.background_disabled_normal, "")
 
     def test_enter_submits_current_guess(self) -> None:
         self.assertFalse(self.root.ids.text_input.multiline)
