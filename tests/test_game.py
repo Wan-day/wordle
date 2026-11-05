@@ -48,6 +48,10 @@ class WordleAppTest(unittest.TestCase):
         self.assertEqual(len(root.ids.game_board.children), 30)
         self.assertEqual(len(root.ids.alpha.children), 27)
 
+    def test_resource_path_resolves_source_data_files(self) -> None:
+        self.assertEqual(main.resource_path("words.txt"), SRC / "words.txt")
+        self.assertEqual(main.resource_path("wordle.kv"), SRC / "wordle.kv")
+
     def submit_guess(self, text: str) -> None:
         self.root.ids.text_input.text = text
         self.app.submit_guess()
@@ -422,6 +426,32 @@ class WordleAppTest(unittest.TestCase):
                 self.alpha_text_color(letter),
                 get_color_from_hex(main.ALPHA_TEXT_NORMAL),
             )
+
+    def test_alphabet_tiles_have_bigger_font(self) -> None:
+        self.assertEqual(self.app.alphabet[0].font_size, 22)
+
+    def test_absent_alpha_tile_is_dimmed(self) -> None:
+        self.submit_guess("slate")
+
+        for letter in "SLT":
+            tile = next(
+                tile for tile in self.app.alphabet if tile.text == letter
+            )
+            self.assertLess(tile.opacity, 1)
+        for letter in "AE":
+            tile = next(
+                tile for tile in self.app.alphabet if tile.text == letter
+            )
+            self.assertEqual(tile.opacity, 1)
+
+    def test_new_game_resets_alpha_tile_dimming(self) -> None:
+        self.submit_guess("slate")
+        tile = next(tile for tile in self.app.alphabet if tile.text == "S")
+        self.assertLess(tile.opacity, 1)
+
+        self.app.new_game()
+
+        self.assertEqual(tile.opacity, 1)
 
     def test_present_letter_keeps_normal_alpha_tile_text(self) -> None:
         self.app.word_list.words = ["crane", "trace"]

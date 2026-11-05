@@ -1,4 +1,5 @@
 import random
+import sys
 from pathlib import Path
 from typing import Any
 from kivy.app import App
@@ -24,11 +25,20 @@ ALPHA_HINT_RANK = {
 
 ALPHA_TEXT_NORMAL = "#eef2ff"
 ALPHA_TEXT_DIM = "#7b849b"
+ALPHA_TILE_DIM_OPACITY = 0.6
+
+
+def resource_path(filename: str) -> Path:
+    """Resolve a data file shipped in the app bundle or next to the source."""
+    base_dir: Path = Path(
+        getattr(sys, "_MEIPASS", Path(__file__).resolve().parent)
+    )
+    return base_dir / filename
 
 
 class WordList():
     def __init__(self) -> None:
-        with open(Path(__file__).resolve().parent / "words.txt") as f:
+        with open(resource_path("words.txt")) as f:
             self.words = f.read().splitlines()
 
     def select_word(self) -> str:
@@ -63,6 +73,11 @@ class WordleApp(App):
         # MyLayout lives in wordle.kv, which load_kv() has already parsed and
         # registered with Factory by the time build() runs.
         return Factory.MyLayout()
+
+    def load_kv(self, filename: str | None = None) -> bool:
+        if filename is None:
+            filename = str(resource_path("wordle.kv"))
+        return super().load_kv(filename=filename)
 
     def on_start(self) -> None:
         board = self.root.ids.game_board
@@ -99,6 +114,7 @@ class WordleApp(App):
             tile.background_color = COLORS["absent"]
             tile.color = ALPHA_TEXT_NORMAL
             tile.disabled = False
+            tile.opacity = 1
         self.root.ids.text_input.disabled = False
         self.root.ids.message.text = ""
         self.root.ids.guess.text = "Submit"
@@ -128,6 +144,11 @@ class WordleApp(App):
                 continue
             if tile.text == letter:
                 tile.background_color = color
+                tile.opacity = (
+                    ALPHA_TILE_DIM_OPACITY
+                    if color == COLORS["absent"]
+                    else 1
+                )
                 if color == COLORS["absent"]:
                     tile.color = ALPHA_TEXT_DIM
                 else:

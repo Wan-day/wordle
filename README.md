@@ -39,6 +39,32 @@ cd src
 python main.py
 ```
 
+## Single executable
+
+To build the app into a single-file executable that needs no Python environment at
+runtime, use [PyInstaller](https://pyinstaller.org):
+
+```bash
+venv/bin/pip install pyinstaller
+venv/bin/pyinstaller --onefile --add-data "src/words.txt:." --add-data "src/wordle.kv:." src/main.py
+```
+
+The executable is written to `dist/main` (`dist/main.exe` on Windows).
+
+Notes:
+
+- The `--add-data` flag bundles the word list and KV file into the executable. It
+  uses `:` as the separator on Linux/macOS and `;` on Windows, so the Windows command
+  becomes:
+
+```bash
+venv\Scripts\pyinstaller.exe --onefile --add-data "src\words.txt;." --add-data "src\wordle.kv;." src\main.py
+```
+
+- When running from a PyInstaller bundle, the app resolves `words.txt` and
+  `wordle.kv` through `sys._MEIPASS` (the bundle extraction directory) and falls
+  back to the source directory for a normal checkout.
+
 ## Controls
 
 - Type letters to fill the current row

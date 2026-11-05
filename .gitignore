@@ -6,3 +6,7 @@ docs/
 # Generated caches
 .cache/
 __pycache__/
+
+# PyInstaller output
+build/
+dist/

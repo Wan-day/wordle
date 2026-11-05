@@ -1,5 +1,6 @@
 # Runtime dependencies
 Kivy==2.3.1
 
-# Development dependencies (linting; tests use the stdlib unittest module)
+# Development dependencies (linting and packaging; tests use the stdlib unittest module)
 flake8==7.4.1
+pyinstaller==6.22.3
